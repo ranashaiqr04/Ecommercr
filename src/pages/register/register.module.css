@@ -1,0 +1,23 @@
+.formContiner{
+    margin-top: 15px;
+}
+.center{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.borderButton{
+    border-radius: 50px;
+}
+.logPath{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.underlink{
+    text-decoration: none;
+   font-weight: 500;
+}

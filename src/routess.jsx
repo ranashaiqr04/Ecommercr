@@ -6,6 +6,13 @@ import Shop from "./pages/shop/Shop";
 import Cart from "./pages/cart/Cart";
 import LogIn from "./pages/login/LogIn";
 import Register from "./pages/register/Register";
+import Reset from "./pages/reset/Rest";
+import VerifyCode from "./pages/verify code/VerifyCode";
+
+
+
+
+
 
 const routes = createBrowserRouter([
   {
@@ -32,9 +39,19 @@ const routes = createBrowserRouter([
       {
         path:'regiter',
         element:<Register/>
+      },
+      {
+          path:'resetPassword',
+      element:<Reset/>
+      },
+            
+      {
+       path: '/verify-code',
+       element: <VerifyCode />
       }
+      
     ]
   }
 ]);
 
-export default routes; // ✅ هذا هو المهم
+export default routes; 
