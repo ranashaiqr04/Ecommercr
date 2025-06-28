@@ -38,6 +38,7 @@ export default function VerifyCode() {
         email,
         code: data.code,
         password: data.password,
+        confirmPassword: data.confirmPassword,
       });
       alert('Code verified successfully! You can now login.');
       navigate('/login');

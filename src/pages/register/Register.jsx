@@ -11,28 +11,39 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import syles from '../register/register.module.css';
-import LogIn from '../login/LogIn';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-
 
 export default function Register() {
   const { register, handleSubmit } = useForm();
+  const navigate = useNavigate();
 
   const registerUser = async (values) => {
-    try {
-      const response = await axios.post(`https://mytshop.runasp.net/api/Account/register`, values);
-    } catch (error) {
-    }
-  };
+  if (values.password !== values.confirmPassword) {
+    alert("كلمة المرور وتأكيدها غير متطابقين");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      'https://mytshop.runasp.net/api/Account/register',
+      values
+     
+    );
+    navigate('/');
+  } catch (error) {
+    console.error("خطأ في التسجيل:", error.response?.data || error.message);
+    alert("فشل في التسجيل، تأكد من صحة البيانات.");
+  }
+};
+
 
   return (
     <Box
-
       component="form"
       onSubmit={handleSubmit(registerUser)}
       sx={{
-        maxWidth:1000,
+        maxWidth: 1000,
         mx: 'auto',
         mt: 4,
         p: 3,
@@ -44,16 +55,16 @@ export default function Register() {
         boxShadow: 3,
       }}
     >
-      <Grid container spacing={2}   className={syles.center}  >
+      <Grid container spacing={2} className={syles.center}>
         <Typography variant="h4" align="center" sx={{ fontWeight: 'bold', mb: 2 }}>
-        Register
-      </Typography>
-          
-        <Grid item xs={12} sm={6} >
+          Register
+        </Typography>
+
+        <Grid item xs={12} sm={6}>
           <TextField
             {...register('userName')}
             label="User Name"
-          sx={{ width: '800px' }} 
+            sx={{ width: '800px' }}
             variant="filled"
             InputProps={{
               startAdornment: (
@@ -64,11 +75,12 @@ export default function Register() {
             }}
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             {...register('firstName')}
             label="First Name"
-             sx={{ width: '393px' }} 
+            sx={{ width: '393px' }}
             variant="filled"
             InputProps={{
               startAdornment: (
@@ -79,12 +91,12 @@ export default function Register() {
             }}
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             {...register('lastName')}
             label="Last Name"
-                      sx={{ width: '393px' }} 
-
+            sx={{ width: '393px' }}
             variant="filled"
             InputProps={{
               startAdornment: (
@@ -95,13 +107,13 @@ export default function Register() {
             }}
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             {...register('email')}
             label="Email"
             type="email"
-                sx={{ width: '800px' }} 
-
+            sx={{ width: '800px' }}
             variant="filled"
             InputProps={{
               startAdornment: (
@@ -112,12 +124,13 @@ export default function Register() {
             }}
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             {...register('password')}
             label="Password"
             type="password"
-            sx={{ width: '393px' }} 
+            sx={{ width: '393px' }}
             variant="filled"
             InputProps={{
               startAdornment: (
@@ -128,12 +141,13 @@ export default function Register() {
             }}
           />
         </Grid>
+
         <Grid item xs={12} sm={6}>
           <TextField
             {...register('confirmPassword')}
             label="Confirm Password"
             type="password"
-             sx={{ width: '393px' }} 
+            sx={{ width: '393px' }}
             variant="filled"
             InputProps={{
               startAdornment: (
@@ -144,13 +158,13 @@ export default function Register() {
             }}
           />
         </Grid>
+
         <Grid item xs={12}>
           <TextField
             {...register('birthOfDate')}
             label="Birth Date"
             type="date"
-            sx={{ width: '800px' }} 
-
+            sx={{ width: '800px' }}
             variant="filled"
             InputLabelProps={{ shrink: true }}
             InputProps={{
@@ -162,27 +176,28 @@ export default function Register() {
             }}
           />
         </Grid>
-              <Button type="submit"  className={syles.borderButton}   variant="contained" size="large" sx={{ mt: 2, width :800}}>
-        Register
-      </Button>
 
-      <div className={syles.logPath} >
-          
+        <Button
+          type="submit"
+          className={syles.borderButton}
+          variant="contained"
+          size="large"
+          sx={{ mt: 2, width: 800 }}
+        >
+          Register
+        </Button>
 
-     <Typography variant="h6" component="h4">
-    Already have an Account?
-  </Typography> 
-       <Typography
-       >
-        <Link to='/LogIn'  color='  secondary'  className={syles.underlink}>LogIN</Link>
-        </Typography> 
-
-      </div>
-
-
+        <div className={syles.logPath}>
+          <Typography variant="h6" component="h4">
+            Already have an Account?
+          </Typography>
+          <Typography>
+            <Link to="/LogIn" color="secondary" className={syles.underlink}>
+              LogIN
+            </Link>
+          </Typography>
+        </div>
       </Grid>
-
-
     </Box>
   );
 }

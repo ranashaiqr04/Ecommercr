@@ -8,6 +8,7 @@ import LogIn from "./pages/login/LogIn";
 import Register from "./pages/register/Register";
 import Reset from "./pages/reset/Rest";
 import VerifyCode from "./pages/verify code/VerifyCode";
+import Product from "./pages/product/Product";
 
 
 
@@ -23,6 +24,11 @@ const routes = createBrowserRouter([
       {
         path: '/',
         element: <Home />
+      },
+      {
+        path :'/product/:id',
+        element:<Product/>
+
       },
       {
         path:'/shop',

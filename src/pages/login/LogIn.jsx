@@ -1,7 +1,5 @@
 import React from 'react';
 import styles from './login.module.css';
-import regiter from '../register/Register';
-import reset from '../reset/Rest';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
@@ -12,19 +10,28 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
+
 
 export default function LogIn() {
   const { register, handleSubmit } = useForm();
+ const navigate = useNavigate();
 
+ 
   const onLogin = async (values) => {
     try {
       const response = await axios.post(
         `https://mytshop.runasp.net/api/Account/Login`,
-        values
-      );
-      // console.log("Login Success:", response.data);
+        values );
+      //Token
+      //
+      localStorage.setItem("userToken",response.data.token);
+          navigate('/');
+          console.log(response);
+          // شغلة التوكن عشان اقدر اعرف مين اليوزر يلي بتنقل بالصفحات
+          //بخزن قيمة التوكن باللوكل ستورج
+     
     } catch (error) {
       console.error("Login Error:", error.response?.data || error.message);
       alert("Login failed. Please check your credentials.");
@@ -88,7 +95,10 @@ export default function LogIn() {
         </Grid>
       </Grid>
 
-      <Button type="submit" variant="contained" size="large" fullWidth sx={{ mt: 2 }}>
+      <Button type="submit"
+       variant="contained"
+        size="large" 
+        fullWidth sx={{ mt: 2 }}>
         Log In
       </Button>
 
