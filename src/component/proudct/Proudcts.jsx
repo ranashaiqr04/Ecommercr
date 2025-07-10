@@ -5,13 +5,13 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  CardMedia, // ✅ أضف هذا السطر
+  CardMedia,
   Button,
   Typography,
   Grid,
   Box,
 } from '@mui/material';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
