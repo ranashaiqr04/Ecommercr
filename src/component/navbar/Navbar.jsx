@@ -1,179 +1,191 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
-import { Link } from 'react-router-dom';
+import * as React from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  Container,
+  Avatar,
+  Button,
+  Tooltip,
+  Box,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Divider,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import AdbIcon from "@mui/icons-material/Adb";
+import { Link, useNavigate } from "react-router-dom";
 
+// المصفوفتان
+const pageGuest = ["Register", "Login","Category"];
+const pageAuth  = ["Cart",,"Category"];
 
-const pages = ['regiter', 'Login','Cart'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+// عناصر البروفايل التي تريدينها في السلايدر
+const profileItems = [
+  { label: "Info",            to: "/profile/info" },
+  { label: "Change Password", to: "/profile/change-password" },
+  { label: "Orders",          to: "/profile/orders" },
+];
 
-function Navbar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+export default function Navbar() {
+  const [anchorNav, setAnchorNav]   = React.useState(null);
+  const [anchorUser, setAnchorUser] = React.useState(null); // (غير مستخدم الآن، ممكن تبقيه)
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  const navigate   = useNavigate();
+  const isLoggedIn = Boolean(localStorage.getItem("userToken"));
+  const pages      = isLoggedIn ? pageAuth : pageGuest;
 
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  const [openSlider, setOpenSlider] = React.useState(false);
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  // فتح/إغلاق قوائم التنقّل
+  const handleOpenNavMenu  = (event) => setAnchorNav(event.currentTarget);
+  const handleCloseNavMenu = () => setAnchorNav(null);
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+  const handleOpenUserMenu  = (event) => setAnchorUser(event.currentTarget); // (غير مستخدم)
+  const handleCloseUserMenu = () => setAnchorUser(null);                     // (غير مستخدم)
+
+  const handleLogout = () => {
+    localStorage.removeItem("userToken");
+    setOpenSlider(false);       // يقفل السلايدر
+    navigate("/login");         // يوجّه لصفحة الدخول
   };
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          {/* شعار ≥ md */}
+          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
-
             variant="h6"
-
-            noWrap
             component={Link}
-            to={'/'}
+            to="/"
             sx={{
               mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
+              display: { xs: "none", md: "flex" },
+              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             LOGO
           </Typography>
 
-          {/* المينيو الصغير (الهامبرغر) */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="menu"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
+          {/* زر الهامبرغر ≤ md */}
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+            <IconButton size="large" color="inherit" onClick={handleOpenNavMenu}>
               <MenuIcon />
             </IconButton>
             <Menu
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
+              anchorEl={anchorNav}
+              open={Boolean(anchorNav)}
               onClose={handleCloseNavMenu}
-              sx={{ display: { xs: 'block', md: 'none' } }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
+              sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}
-                 component={Link}
-                to={`/${page}`}
+                <MenuItem
+                  key={page}
+                  component={Link}
+                  to={`/${page}`}
+                  onClick={handleCloseNavMenu}
                 >
-                  <Typography textAlign="center">
-                      {page}
-                  </Typography>
-
+                  <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
 
-          {/* اللوجو في الشاشات الصغيرة */}
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          {/* شعار ≤ md */}
+          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
             variant="h5"
-            noWrap
             component={Link}
-            to={'/'}
+            to="/"
             sx={{
               mr: 2,
-              display: { xs: 'flex', md: 'none' },
+              display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: 'monospace',
+              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
             LOGO
           </Typography>
 
-          {/* قائمة الروابط في الشاشات الكبيرة */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {/* روابط ≥ md */}
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
                 component={Link}
                 to={`/${page}`}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
               </Button>
             ))}
+
+            {isLoggedIn ? (
+              <Button onClick={handleLogout} sx={{ my: 2, color: "white", display: "block" }}>
+                Logout
+              </Button>
+            ) : null}
           </Box>
 
-          {/* صورة المستخدم وقائمة الإعدادات */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {/* صورة المستخدم (للمسجّلين) → يفتح Drawer */}
+          {isLoggedIn && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={() => setOpenSlider(true)} sx={{ p: 0 }}>
+                  <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+
+              <Drawer
+                anchor="right"
+                open={openSlider}
+                onClose={() => setOpenSlider(false)}
+                sx={{ "& .MuiDrawer-paper": { width: 280 } }}
+              >
+                <Box sx={{ p: 2 }}>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Profile
+                  </Typography>
+                </Box>
+                <Divider />
+                <List>
+                  {profileItems.map((item) => (
+                    <ListItemButton
+                      key={item.to}
+                      component={Link}
+                      to={item.to}
+                      onClick={() => setOpenSlider(false)} // يقفل السلايدر بعد التنقل
+                    >
+                      <ListItemText primary={item.label} />
+                    </ListItemButton>
+                  ))}
+                  <Divider sx={{ my: 1 }} />
+                  <ListItemButton onClick={handleLogout}>
+                    <ListItemText primary="Logout" />
+                  </ListItemButton>
+                </List>
+              </Drawer>
+            </Box>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-
-export default Navbar;
-
-// اذا بدي اعمل Resaet للعناصر بستخدم اشي اسمه
-//CssBaseLine

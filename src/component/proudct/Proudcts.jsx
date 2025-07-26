@@ -19,7 +19,7 @@ export default function Products() {
   const getProducts = async () => {
     try {
       const response = await axios.get('https://mytshop.runasp.net/api/products');
-      setProducts(response.data);
+      setProducts(response.data.data);
     } catch (error) {
       console.error('Error fetching products:', error);
     }

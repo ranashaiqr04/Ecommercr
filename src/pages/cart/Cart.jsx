@@ -14,28 +14,42 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { Delete } from "@mui/icons-material";
 import Loader from "../../component/shared/Loader";
+import { Link } from 'react-router-dom';
 
 export default function Cart() {
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [isLoading, setLoading] = useState(true);
+  const [totalItems,setTotalItems]=useState (0);
+  let test = 0 ;
 
-  const getProductFromCart = async () => {
-    try {
-      const token = localStorage.getItem("userToken");
-      const response = await axios.get("https://mytshop.runasp.net/api/Carts", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setProducts(response.data.product|| []);
-      setTotalPrice(response.data.totalPrice);
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+const getProductFromCart = async () => {
+  try {
+    const token = localStorage.getItem("userToken");
+    const response = await axios.get("https://mytshop.runasp.net/api/Carts", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const cartData = response.data.cartResponse || [];
+    setProducts(cartData);
+    setTotalPrice(response.data.totalPrice);
+
+    let items = 0;
+    cartData.forEach((product) => {
+      test = totalItems + product.count ; 
+
+    });
+    setTotalItems(test);
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const increaseQty = async (id) => {
     try {
@@ -54,6 +68,7 @@ export default function Cart() {
         product.id === id ? { ...product, count: product.count + 1 } : product
       );
       setProducts(updatedProducts);
+      await getProductFromCart();
     } catch (error) {
       console.error("Error increasing quantity:", error);
     }
@@ -65,7 +80,6 @@ export default function Cart() {
       const targetProduct = products.find((p) => p.id === id);
 
       if (targetProduct.count === 1) {
-        // حذف المنتج إذا الكمية 1
         await axios.delete(`https://mytshop.runasp.net/api/Carts/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +89,6 @@ export default function Cart() {
         const updatedProducts = products.filter((p) => p.id !== id);
         setProducts(updatedProducts);
       } else {
-        // تقليل الكمية فقط
         await axios.patch(
           `https://mytshop.runasp.net/api/Carts/decreaseCount/${id}`,
           {},
@@ -91,6 +104,8 @@ export default function Cart() {
         );
         setProducts(updatedProducts);
       }
+
+      await getProductFromCart();
     } catch (error) {
       console.error("Error decreasing quantity:", error);
     }
@@ -104,8 +119,10 @@ export default function Cart() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       const updatedProducts = products.filter((product) => product.id !== id);
       setProducts(updatedProducts);
+      await getProductFromCart();
     } catch (error) {
       console.error("Error removing item:", error);
     }
@@ -119,9 +136,9 @@ export default function Cart() {
           Authorization: `Bearer ${token}`,
         },
       });
+
       setProducts([]);
-      // أو إذا تريد تحديث من السيرفر:
-      // await getProductFromCart();
+      setTotalPrice(0);
     } catch (error) {
       console.error("Error clearing cart:", error);
     }
@@ -139,9 +156,11 @@ export default function Cart() {
         Shopping Cart
       </Typography>
 
-      <Button onClick={clearItem}>Clear Cart</Button>
+      <Button onClick={clearItem} color="error" variant="outlined" sx={{ mb: 2 }}>
+        Clear Cart
+      </Button>
 
-      <Grid container spacing={4} sx={{ mt: 2 }}>
+      <Grid container spacing={4}>
         <Grid item xs={12} md={8}>
           {products.length === 0 ? (
             <Typography variant="h5">Your cart is empty.</Typography>
@@ -164,24 +183,28 @@ export default function Cart() {
                   image={product.imageUrl || "https://placehold.co/100"}
                   sx={{ borderRadius: 2, width: 100 }}
                 />
-                <CardContent>
-                  <Typography variant="h6">{product.name}</Typography>
-                  <Typography variant="subtitle1" color="primary">
-                    {product.price || 4}$
-                  </Typography>
-                </CardContent>
+
+                <CardMedia
+          component="img"
+          image={`https://mytshop.runasp.net/Images/${product.image}` || 'https://placehold.co/100'}
+          sx={{ width: 100, height: 100, borderRadius: 2 }}
+          alt={product.name}
+        />
+        <CardContent>
+          <Typography variant="h6">{product.name}</Typography>
+          <Typography variant="subtitle1" color="primary">
+            {product.price || '4$'}
+          </Typography>
+        </CardContent>
 
                 <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                   <IconButton onClick={() => deCreaseQty(product.id)}>
                     <RemoveIcon />
                   </IconButton>
-
                   <Typography>{product.count || 1}</Typography>
-
                   <IconButton onClick={() => increaseQty(product.id)}>
                     <AddIcon />
                   </IconButton>
-
                   <IconButton onClick={() => removeItem(product.id)}>
                     <Delete color="error" />
                   </IconButton>
@@ -195,11 +218,16 @@ export default function Cart() {
           <Typography variant="h4" gutterBottom>
             Order Summary
           </Typography>
-          {/* هنا يمكنك إضافة مجموع السعر وزر الدفع لاحقًا */}
+
           <Typography variant="h6" mt={2}>
-            Total: {totalPrice}$ 
+            Total Price: {totalPrice}$
           </Typography>
-          <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+
+            <Typography variant="h6" mt={2}>
+            Total Items: {totalItems}
+          </Typography>
+
+          <Button variant="contained" color="primary" component={Link} to='/checkout' sx={{ mt: 2 }}>
             Checkout
           </Button>
         </Grid>
